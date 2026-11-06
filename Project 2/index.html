@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CocktailHub - Premium Cocktail Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="navbar-container">
+    <a href="#" class="logo" onclick="reloadPage(event)">🍹 CocktailHub</a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#" class="nav-link active">Home</a>
+      <a href="#products" class="nav-link">Menu</a>
+      <a href="#about" class="nav-link">About</a>
+    </nav>
+    <div class="navbar-right">
+      <div class="cart-icon" onclick="toggleCart()">
+        🛒 Cart <span class="cart-badge" id="cartBadge">0</span>
+      </div>
+      <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO SECTION -->
+<section class="hero">
+  <div class="hero-bg-image"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">🍹 Premium Bar Experience</p>
+    <h1>Craft Cocktails<br><span class="hero-highlight">Delivered Fresh</span></h1>
+    <p class="hero-sub">Order your favorite handcrafted drinks & get them delivered right to your door</p>
+    <div class="hero-btns">
+      <a href="#products" class="hero-btn">Order Now 🍹</a>
+      <a href="#about" class="hero-btn-outline">Learn More</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><strong>20+</strong><span>Cocktails</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><strong>4.8★</strong><span>Rating</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><strong>30min</strong><span>Delivery</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SEARCH & FILTER -->
+<section class="search-section">
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="🔍 Search cocktails..." oninput="onSearchInput()">
+    <select id="categoryFilter" onchange="filterProducts()">
+      <option value="">All Categories</option>
+      <option value="Cocktail">Cocktail</option>
+      <option value="Shot">Shot</option>
+      <option value="Mocktail">Mocktail</option>
+      <option value="Classic">Classic</option>
+      <option value="Tropical">Tropical</option>
+    </select>
+    <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearch()">✕ Clear</button>
+  </div>
+</section>
+
+<!-- PRODUCTS SECTION -->
+<section class="products-section" id="products">
+  <div class="section-header">
+    <h2>Our Menu</h2>
+    <p>Fresh cocktails made with premium ingredients</p>
+  </div>
+  <div class="cart-limit-notice" id="cartLimitNotice">⚠️ Maximum 7 items can be added to cart</div>
+  <div class="products-grid" id="productsGrid"></div>
+  <div class="pagination" id="pagination"></div>
+</section>
+
+<!-- ABOUT SECTION -->
+<section class="about-section" id="about">
+  <div class="about-container">
+    <div class="about-image">
+      <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&q=80" alt="Cocktail bar">
+    </div>
+    <div class="about-text">
+      <p class="about-eyebrow">About Us</p>
+      <h2>Crafted with Passion</h2>
+      <p>We believe every drink tells a story. Our expert mixologists craft each cocktail with the finest ingredients, bringing premium bar experience straight to your home.</p>
+      <div class="about-features">
+        <div class="about-feature"><span>🌿</span> Fresh Ingredients</div>
+        <div class="about-feature"><span>⚡</span> Fast Delivery</div>
+        <div class="about-feature"><span>👨‍🍳</span> Expert Mixologists</div>
+        <div class="about-feature"><span>💯</span> Quality Guaranteed</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-logo">🍹 CocktailHub</div>
+    <p>Premium cocktails delivered to your door.</p>
+    <p class="footer-copy">© 2025 CocktailHub. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>🛒 Your Cart</h3>
+    <div style="display:flex;align-items:center;gap:0.75rem">
+      <span class="cart-limit-badge" id="cartLimitBadge">0/7 items</span>
+      <button class="close-cart" onclick="toggleCart()">✕</button>
+    </div>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <p class="empty-cart">Your cart is empty 🛒</p>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">Total: ৳<span id="cartTotal">0</span></div>
+    <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout →</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkoutModal" style="display:none">
+  <div class="checkout-modal">
+    <button class="modal-close-btn" onclick="closeCheckout()">✕</button>
+    <h2>📋 Place Your Order</h2>
+    <p class="modal-subtitle">Fill in your details to complete the order</p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>👤 Full Name *</label>
+        <input type="text" id="custName" placeholder="Enter your full name">
+        <span class="field-error" id="nameError"></span>
+      </div>
+      <div class="form-group">
+        <label>📱 Phone Number *</label>
+        <input type="tel" id="custPhone" placeholder="01XXXXXXXXX">
+        <span class="field-error" id="phoneError"></span>
+      </div>
+      <div class="form-group full-width">
+        <label>📍 Delivery Address *</label>
+        <textarea id="custAddress" placeholder="House no, Road, Area, City"></textarea>
+        <span class="field-error" id="addressError"></span>
+      </div>
+      <div class="form-group">
+        <label>✉️ Email (Optional)</label>
+        <input type="email" id="custEmail" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label>💳 Payment Method *</label>
+        <select id="paymentMethod">
+          <option value="">Select Payment</option>
+          <option value="Cash on Delivery">💵 Cash on Delivery</option>
+          <option value="bKash">📲 bKash</option>
+          <option value="Nagad">📲 Nagad</option>
+          <option value="Card">💳 Card Payment</option>
+        </select>
+        <span class="field-error" id="paymentError"></span>
+      </div>
+      <div class="form-group full-width">
+        <label>📝 Special Instructions</label>
+        <textarea id="custNote" placeholder="Any special requests? (optional)"></textarea>
+      </div>
+    </div>
+    <div class="order-summary">
+      <h3>🧾 Order Summary</h3>
+      <div id="modalOrderItems"></div>
+      <div class="summary-totals">
+        <div class="summary-row"><span>Subtotal:</span><span>৳<span id="modalSubtotal">0</span></span></div>
+        <div class="summary-row"><span>Delivery Fee:</span><span>৳50</span></div>
+        <div class="summary-row total-row"><span>Total:</span><span>৳<span id="modalTotal">0</span></span></div>
+      </div>
+    </div>
+    <button class="place-order-btn" onclick="placeOrder()">✅ Place Order</button>
+  </div>
+</div>
+
+<!-- ORDER SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal" style="display:none">
+  <div class="success-modal">
+    <div class="success-icon">🎉</div>
+    <h2>Order Placed Successfully!</h2>
+    <div class="order-receipt" id="orderReceipt"></div>
+    <button class="close-success-btn" onclick="closeSuccess()">Continue Shopping</button>
+  </div>
+</div>
+
+<!-- PRODUCT IMAGE LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h4>Remove Item?</h4>
+    <p id="confirmText">Remove this item from your cart?</p>
+    <div class="confirm-btns">
+      <button class="confirm-yes" id="confirmYes">Remove</button>
+      <button class="confirm-no" onclick="closeConfirm()">Keep</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+// ==================== PRODUCT DATA ====================
+
+const products = [
+  { id: 1,  name: "Strawberry Daiquiri", category: "Cocktail",  price: 850,  image: "https://www.thecocktaildb.com/images/media/drink/rptuxy1472669372.jpg", description: "Fresh strawberries blended with rum & lime",        details: "Ingredients: White rum, fresh strawberries, lime juice, sugar syrup. Glass: Coupe. Garnish: Strawberry slice. Best served chilled.",                                badge: "🔥 Best Seller", rating: 4.8 },
+  { id: 2,  name: "Mojito Classic",       category: "Classic",   price: 780,  image: "https://www.thecocktaildb.com/images/media/drink/metwgh1606770327.jpg", description: "Mint, lime, sugar & sparkling water",              details: "Ingredients: White rum, fresh mint, lime juice, sugar, soda water. Glass: Highball. Garnish: Mint sprig & lime wedge.",                                          badge: "⭐ Popular",    rating: 4.9 },
+  { id: 3,  name: "Margarita",            category: "Classic",   price: 920,  image: "https://www.thecocktaildb.com/images/media/drink/5noda61589575158.jpg",  description: "Tequila, triple sec & fresh lime juice",          details: "Ingredients: Tequila blanco, triple sec, fresh lime juice, salt rim. Glass: Margarita. Garnish: Lime wheel & salt.",                                           badge: "❤️ Favorite",  rating: 4.7 },
+  { id: 4,  name: "Blue Lagoon",          category: "Tropical",  price: 980,  image: "https://www.thecocktaildb.com/images/media/drink/bry4qh1582751040.jpg",  description: "Blue curacao, vodka & lemonade mix",              details: "Ingredients: Vodka, Blue Curacao, lemonade. Glass: Highball. Garnish: Lemon slice & cherry. Visually stunning.",                                               badge: "💙 Trending",  rating: 4.6 },
+  { id: 5,  name: "Pina Colada",          category: "Tropical",  price: 820,  image: "https://www.thecocktaildb.com/images/media/drink/cpf4j51504371346.jpg",  description: "Coconut cream, pineapple & rum",                  details: "Ingredients: White rum, coconut cream, pineapple juice. Glass: Hurricane. Garnish: Pineapple & cherry. Blend with ice.",                                       badge: "🌴 Tropical",  rating: 4.8 },
+  { id: 6,  name: "Sex on the Beach",     category: "Cocktail",  price: 890,  image: "https://www.thecocktaildb.com/images/media/drink/tpmpit1591797710.jpg",  description: "Vodka, peach schnapps & fruit juices",            details: "Ingredients: Vodka, peach schnapps, orange juice, cranberry juice. Glass: Highball. Garnish: Orange slice.",                                                   badge: "🍑 Sweet",     rating: 4.5 },
+  { id: 7,  name: "Long Island Iced Tea", category: "Classic",   price: 1050, image: "https://www.thecocktaildb.com/images/media/drink/rrtssw1472668972.jpg",  description: "Five spirits with cola & lemon",                  details: "Ingredients: Vodka, rum, gin, tequila, triple sec, lemon juice, cola. Glass: Highball. Strong & refreshing.",                                                  badge: "💪 Strong",    rating: 4.7 },
+  { id: 8,  name: "Cosmopolitan",         category: "Cocktail",  price: 920,  image: "https://www.thecocktaildb.com/images/media/drink/kpsajh1504368362.jpg",  description: "Vodka, cranberry & orange liqueur",               details: "Ingredients: Citrus vodka, triple sec, cranberry juice, lime juice. Glass: Martini. Garnish: Lime wheel.",                                                     badge: "🌸 Elegant",   rating: 4.6 },
+  { id: 9,  name: "Whiskey Sour",         category: "Classic",   price: 950,  image: "https://www.thecocktaildb.com/images/media/drink/hbkfsh1589574990.jpg",  description: "Bourbon, lemon juice & sugar syrup",              details: "Ingredients: Bourbon whiskey, lemon juice, sugar syrup, egg white (optional). Glass: Rocks. Garnish: Cherry.",                                                 badge: "🥃 Classic",   rating: 4.7 },
+  { id: 10, name: "Tequila Sunrise",      category: "Cocktail",  price: 850,  image: "https://www.thecocktaildb.com/images/media/drink/quqyqp1480879103.jpg",  description: "Tequila, OJ & grenadine syrup",                   details: "Ingredients: Tequila, orange juice, grenadine. Glass: Highball. Do not stir — let grenadine sink for sunrise effect.",                                         badge: "🌅 Sunrise",   rating: 4.5 },
+  { id: 11, name: "Espresso Martini",     category: "Cocktail",  price: 980,  image: "https://www.thecocktaildb.com/images/media/drink/n0sx8g1504370520.jpg",  description: "Vodka, coffee liqueur & espresso",                details: "Ingredients: Vodka, Kahlúa, fresh espresso, sugar syrup. Glass: Martini. Garnish: 3 coffee beans.",                                                            badge: "☕ Coffee",    rating: 4.8 },
+  { id: 12, name: "Aperol Spritz",        category: "Cocktail",  price: 750,  image: "https://www.thecocktaildb.com/images/media/drink/iloasq1587661640.jpg",  description: "Aperol, prosecco & soda water",                   details: "Ingredients: Aperol, prosecco, soda water (3:2:1 ratio). Glass: Wine glass with ice. Garnish: Orange slice.",                                                 badge: "🍊 Refreshing",rating: 4.6 },
+  { id: 13, name: "Moscow Mule",          category: "Classic",   price: 850,  image: "https://www.thecocktaildb.com/images/media/drink/3pylqc1504370988.jpg",  description: "Vodka, ginger beer & fresh lime",                 details: "Ingredients: Vodka, ginger beer, lime juice. Glass: Copper mug (traditional). Garnish: Lime wedge & mint.",                                                   badge: "🫚 Spicy",     rating: 4.7 },
+  { id: 14, name: "Mango Tango",          category: "Mocktail",  price: 580,  image: "https://www.thecocktaildb.com/images/media/drink/wyrsxu1441554538.jpg",  description: "Fresh mango, lime & ginger mocktail",             details: "Ingredients: Mango puree, lime juice, ginger syrup, soda water. Glass: Highball. 100% alcohol-free.",                                                         badge: "🥭 Alcohol-Free", rating: 4.4 },
+  { id: 15, name: "Watermelon Cooler",    category: "Mocktail",  price: 520,  image: "https://www.thecocktaildb.com/images/media/drink/apnsjp1504368835.jpg",  description: "Watermelon, mint & soda refresher",               details: "Ingredients: Fresh watermelon juice, mint, lime, soda water. Glass: Highball. Alcohol-free & refreshing.",                                                    badge: "🍉 Summer",    rating: 4.3 },
+  { id: 16, name: "B52 Shot",             category: "Shot",      price: 450,  image: "https://www.thecocktaildb.com/images/media/drink/rtpxqw1468877562.jpg",  description: "Layered coffee, baileys & grand marnier",         details: "Ingredients: Kahlúa (bottom), Baileys Irish Cream (middle), Grand Marnier (top). Glass: Shot glass. Served layered.",                                       badge: "🔥 Hot Shot",  rating: 4.5 },
+  { id: 17, name: "Kamikaze Shot",        category: "Shot",      price: 380,  image: "https://www.thecocktaildb.com/images/media/drink/t7mx0t1504370555.jpg",  description: "Vodka, triple sec & lime juice",                  details: "Ingredients: Vodka, triple sec, lime juice (equal parts). Glass: Shot glass. Shake & strain.",                                                                badge: "💥 Bold",      rating: 4.4 },
+  { id: 18, name: "Negroni",              category: "Classic",   price: 980,  image: "https://www.thecocktaildb.com/images/media/drink/qgdu971561574065.jpg",  description: "Gin, Campari & sweet vermouth",                   details: "Ingredients: Gin, Campari, sweet vermouth (equal parts). Glass: Rocks. Garnish: Orange peel. Stir with ice.",                                                 badge: "🎩 Premium",   rating: 4.8 },
+  { id: 19, name: "Dark & Stormy",        category: "Cocktail",  price: 880,  image: "https://www.thecocktaildb.com/images/media/drink/yystvv1473344045.jpg",  description: "Dark rum, ginger beer & lime",                    details: "Ingredients: Dark rum, ginger beer, lime juice. Glass: Highball. Float rum on top of ginger beer.",                                                           badge: "⛈️ Bold",     rating: 4.6 },
+  { id: 20, name: "Lemon Drop Martini",   category: "Cocktail",  price: 920,  image: "https://www.thecocktaildb.com/images/media/drink/3k9qic1493068931.jpg",  description: "Citrus vodka, triple sec & lemon",                details: "Ingredients: Citrus vodka, triple sec, lemon juice, sugar syrup. Glass: Martini with sugar rim.",                                                             badge: "🍋 Citrus",    rating: 4.5 }
+];
+
+// ==================== STATE ====================
+const ITEMS_PER_PAGE = 8;
+const MAX_CART_ITEMS = 7;
+let cart = [];
+let filteredProducts = [...products];
+let currentPage = 1;
+let confirmCallback = null;
+
+// ==================== LOGO RELOAD ====================
+function reloadPage(e) {
+  e.preventDefault();
+  clearSearch();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ==================== SKELETON ====================
+function showSkeletons() {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = Array(8).fill(`
+    <div class="skeleton-card">
+      <div class="skeleton skeleton-img"></div>
+      <div class="skeleton-body">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-text"></div>
+        <div class="skeleton skeleton-text short"></div>
+        <div class="skeleton skeleton-btn"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ==================== RATING STARS ====================
+function getRatingStars(r) {
+  return '⭐'.repeat(Math.floor(r)) + (r % 1 >= 0.5 ? '✨' : '');
+}
+
+// ==================== CART CHECK ====================
+function isInCart(id) {
+  return cart.some(c => c.id === id);
+}
+
+// ==================== RENDER PRODUCTS ====================
+function renderProducts() {
+  const grid = document.getElementById('productsGrid');
+  if (filteredProducts.length === 0) {
+    grid.innerHTML = '<p class="no-products">No cocktails found 😔</p>';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  if (currentPage > totalPages) currentPage = 1;
+
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const pageItems = filteredProducts.slice(start, start + ITEMS_PER_PAGE);
+  const totalInCart = cart.reduce((s, c) => s + c.qty, 0);
+
+  grid.innerHTML = pageItems.map(p => {
+    const inCart = isInCart(p.id);
+    const atLimit = totalInCart >= MAX_CART_ITEMS && !inCart;
+    return `
+      <div class="product-card ${inCart ? 'in-cart' : ''}" id="card-${p.id}">
+        <div class="product-badge">${p.badge}</div>
+        <div class="product-img-wrap" onclick="openLightbox('${p.image}', '${p.name}')">
+          <img src="${p.image}" alt="${p.name}" class="product-img" loading="lazy"
+               onerror="this.src='https://www.thecocktaildb.com/images/media/drink/5noda61589575158.jpg'">
+          <div class="img-zoom-hint">🔍 View</div>
+        </div>
+        <div class="product-info">
+          <div class="product-top">
+            <h3>${p.name}</h3>
+            <span class="product-category">${p.category}</span>
+          </div>
+          <p class="product-desc">${p.description}</p>
+          <p class="product-details">${p.details}</p>
+          <div class="product-rating">${getRatingStars(p.rating)} (${p.rating})</div>
+          <div class="product-bottom">
+            <span class="product-price">৳${p.price}</span>
+            <button
+              class="add-to-cart-btn ${inCart ? 'selected' : ''}"
+              onclick="addToCart(${p.id})"
+              ${atLimit && !inCart ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>
+              ${inCart ? '✓ Selected' : 'Add to Cart 🛒'}
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  setTimeout(() => {
+    document.querySelectorAll('.product-card').forEach(c => c.classList.add('visible'));
+  }, 50);
+
+  renderPagination(totalPages);
+}
+
+// ==================== PAGINATION ====================
+function renderPagination(totalPages) {
+  const pg = document.getElementById('pagination');
+  if (totalPages <= 1) { pg.innerHTML = ''; return; }
+
+  let html = `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
+  html += `<span class="page-info">Page ${currentPage} of ${totalPages}</span>`;
+  pg.innerHTML = html;
+}
+
+function goPage(p) {
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  if (p < 1 || p > totalPages) return;
+  currentPage = p;
+  renderProducts();
+  document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ==================== SEARCH & FILTER ====================
+function onSearchInput() {
+  const val = document.getElementById('searchInput').value;
+  document.getElementById('clearSearchBtn').classList.toggle('visible', val.length > 0);
+  filterProducts();
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('categoryFilter').value = '';
+  document.getElementById('clearSearchBtn').classList.remove('visible');
+  filterProducts();
+}
+
+function filterProducts() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const category = document.getElementById('categoryFilter').value;
+  filteredProducts = products.filter(p => {
+    const ms = p.name.toLowerCase().includes(search) || p.description.toLowerCase().includes(search);
+    const mc = !category || p.category === category;
+    return ms && mc;
+  });
+  currentPage = 1;
+  renderProducts();
+}
+
+// ==================== CART ====================
+function addToCart(id) {
+  if (isInCart(id)) return;
+  const totalInCart = cart.reduce((s, c) => s + c.qty, 0);
+  if (totalInCart >= MAX_CART_ITEMS) {
+    showLimitNotif();
+    const notice = document.getElementById('cartLimitNotice');
+    notice.classList.add('show');
+    setTimeout(() => notice.classList.remove('show'), 3000);
+    return;
+  }
+  const product = products.find(p => p.id === id);
+  cart.push({ ...product, qty: 1 });
+  updateCart();
+  showAddedNotification(product.name);
+  renderProducts();
+}
+
+function removeFromCart(id, name) {
+  openConfirm(`Remove "${name}" from cart?`, () => {
+    cart = cart.filter(c => c.id !== id);
+    updateCart();
+    renderProducts();
+  });
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(c => c.id === id);
+  if (!item) return;
+  const totalInCart = cart.reduce((s, c) => s + c.qty, 0);
+  if (delta > 0 && totalInCart >= MAX_CART_ITEMS) {
+    showLimitNotif();
+    return;
+  }
+  if (delta < 0 && item.qty === 1) {
+    openConfirm(`Remove "${item.name}" from cart?`, () => {
+      cart = cart.filter(c => c.id !== id);
+      updateCart();
+      renderProducts();
+    });
+    return;
+  }
+  item.qty += delta;
+  updateCart();
+  renderProducts();
+}
+
+function updateCart() {
+  const totalQty = cart.reduce((s, c) => s + c.qty, 0);
+  const badge = document.getElementById('cartBadge');
+  badge.textContent = totalQty;
+  badge.style.display = totalQty > 0 ? 'inline' : 'none';
+
+  const limitBadge = document.getElementById('cartLimitBadge');
+  limitBadge.textContent = `${totalQty}/${MAX_CART_ITEMS} items`;
+  limitBadge.className = 'cart-limit-badge' +
+    (totalQty >= MAX_CART_ITEMS ? ' maxed' : totalQty >= 5 ? ' warning' : '');
+
+  const cartItems = document.getElementById('cartItems');
+  const cartFooter = document.getElementById('cartFooter');
+
+  if (cart.length === 0) {
+    cartItems.innerHTML = '<p class="empty-cart">Your cart is empty 🛒</p>';
+    cartFooter.style.display = 'none';
+    return;
+  }
+
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  document.getElementById('cartTotal').textContent = total;
+
+  cartItems.innerHTML = cart.map(c => `
+    <div class="cart-item">
+      <img src="${c.image}" alt="${c.name}"
+           onerror="this.src='https://www.thecocktaildb.com/images/media/drink/5noda61589575158.jpg'">
+      <div class="cart-item-info">
+        <h4>${c.name}</h4>
+        <span class="cart-item-price">৳${c.price} each</span>
+        <div class="qty-controls">
+          <button onclick="changeQty(${c.id}, -1)">−</button>
+          <span>${c.qty}</span>
+          <button onclick="changeQty(${c.id}, 1)">+</button>
+        </div>
+      </div>
+      <div class="cart-item-right">
+        <span class="cart-item-total">৳${c.price * c.qty}</span>
+        <button class="remove-item" onclick="removeFromCart(${c.id}, '${c.name.replace(/'/g, "\\'")}')">🗑️</button>
+      </div>
+    </div>`).join('');
+
+  cartFooter.style.display = 'block';
+}
+
+function toggleCart() {
+  document.getElementById('cartSidebar').classList.toggle('open');
+  document.getElementById('cartOverlay').classList.toggle('active');
+}
+
+// ==================== CHECKOUT ====================
+function openCheckout() {
+  if (cart.length === 0) return;
+  toggleCart();
+  const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  document.getElementById('modalSubtotal').textContent = subtotal;
+  document.getElementById('modalTotal').textContent = subtotal + 50;
+  document.getElementById('modalOrderItems').innerHTML = cart.map(c =>
+    `<div class="modal-order-item"><span>${c.name} x${c.qty}</span><span>৳${c.price * c.qty}</span></div>`
+  ).join('');
+  clearFormErrors();
+  document.getElementById('checkoutModal').style.display = 'flex';
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutModal').style.display = 'none';
+}
+
+// ==================== FORM VALIDATION ====================
+function clearFormErrors() {
+  ['custName', 'custPhone', 'custAddress', 'paymentMethod'].forEach(id => {
+    document.getElementById(id).classList.remove('error');
+  });
+  ['nameError', 'phoneError', 'addressError', 'paymentError'].forEach(id => {
+    document.getElementById(id).textContent = '';
+  });
+}
+
+function validateForm() {
+  let valid = true;
+  clearFormErrors();
+  const phoneRegex = /^01[3-9]\d{8}$/;
+
+  const name    = document.getElementById('custName').value.trim();
+  const phone   = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+  const payment = document.getElementById('paymentMethod').value;
+
+  if (!name) {
+    document.getElementById('custName').classList.add('error');
+    document.getElementById('nameError').textContent = 'Full name is required';
+    valid = false;
+  }
+  if (!phone) {
+    document.getElementById('custPhone').classList.add('error');
+    document.getElementById('phoneError').textContent = 'Phone number is required';
+    valid = false;
+  } else if (!phoneRegex.test(phone)) {
+    document.getElementById('custPhone').classList.add('error');
+    document.getElementById('phoneError').textContent = 'Enter valid BD number (01XXXXXXXXX)';
+    valid = false;
+  }
+  if (!address) {
+    document.getElementById('custAddress').classList.add('error');
+    document.getElementById('addressError').textContent = 'Delivery address is required';
+    valid = false;
+  }
+  if (!payment) {
+    document.getElementById('paymentMethod').classList.add('error');
+    document.getElementById('paymentError').textContent = 'Please select a payment method';
+    valid = false;
+  }
+  return valid;
+}
+
+// ==================== PLACE ORDER ====================
+function placeOrder() {
+  if (!validateForm()) return;
+
+  const name    = document.getElementById('custName').value.trim();
+  const phone   = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+  const email   = document.getElementById('custEmail').value.trim();
+  const payment = document.getElementById('paymentMethod').value;
+  const note    = document.getElementById('custNote').value.trim();
+  const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const total    = subtotal + 50;
+  const orderId  = 'CH-' + Date.now().toString().slice(-6);
+
+  document.getElementById('orderReceipt').innerHTML = `
+    <div class="receipt-header">
+      <div class="receipt-logo">🍹 CocktailHub</div>
+      <div class="receipt-id">Order ID: <strong>${orderId}</strong></div>
+      <div class="receipt-date">${new Date().toLocaleString()}</div>
+    </div>
+    <div class="receipt-section">
+      <h4>📦 Customer Details</h4>
+      <div class="receipt-row"><span>Name:</span><span>${name}</span></div>
+      <div class="receipt-row"><span>Phone:</span><span>${phone}</span></div>
+      <div class="receipt-row"><span>Address:</span><span>${address}</span></div>
+      ${email ? `<div class="receipt-row"><span>Email:</span><span>${email}</span></div>` : ''}
+      <div class="receipt-row"><span>Payment:</span><span>${payment}</span></div>
+      ${note ? `<div class="receipt-row"><span>Note:</span><span>${note}</span></div>` : ''}
+    </div>
+    <div class="receipt-section">
+      <h4>🛒 Order Items</h4>
+      ${cart.map(c => `<div class="receipt-row"><span>${c.name} x${c.qty}</span><span>৳${c.price * c.qty}</span></div>`).join('')}
+    </div>
+    <div class="receipt-section">
+      <h4>💰 Bill Summary</h4>
+      <div class="receipt-row"><span>Subtotal:</span><span>৳${subtotal}</span></div>
+      <div class="receipt-row"><span>Delivery Fee:</span><span>৳50</span></div>
+      <div class="receipt-row receipt-total"><span>Total Amount:</span><span>৳${total}</span></div>
+    </div>
+    <div class="receipt-footer">Thank you for your order! 🎉<br>Estimated delivery: 30-45 minutes</div>`;
+
+  closeCheckout();
+  document.getElementById('successModal').style.display = 'flex';
+  cart = [];
+  updateCart();
+  renderProducts();
+  ['custName','custPhone','custAddress','custEmail','custNote'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('paymentMethod').value = '';
+}
+
+function closeSuccess() {
+  document.getElementById('successModal').style.display = 'none';
+}
+
+// ==================== HAMBURGER MENU ====================
+function toggleMenu() {
+  document.getElementById('navLinks').classList.toggle('open');
+  document.getElementById('hamburger').classList.toggle('active');
+}
+
+// ==================== LIGHTBOX ====================
+function openLightbox(src, name) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+}
+
+// ==================== NOTIFICATIONS ====================
+function showAddedNotification(name) {
+  const n = document.createElement('div');
+  n.className = 'add-notif';
+  n.innerHTML = `✅ ${name} added!`;
+  document.body.appendChild(n);
+  setTimeout(() => n.classList.add('show'), 10);
+  setTimeout(() => { n.classList.remove('show'); setTimeout(() => n.remove(), 300); }, 2500);
+}
+
+function showLimitNotif() {
+  const n = document.createElement('div');
+  n.className = 'limit-notif';
+  n.innerHTML = `⚠️ Max ${MAX_CART_ITEMS} items allowed!`;
+  document.body.appendChild(n);
+  setTimeout(() => n.classList.add('show'), 10);
+  setTimeout(() => { n.classList.remove('show'); setTimeout(() => n.remove(), 300); }, 2500);
+}
+
+// ==================== CONFIRM DIALOG ====================
+function openConfirm(text, cb) {
+  document.getElementById('confirmText').textContent = text;
+  confirmCallback = cb;
+  document.getElementById('confirmOverlay').classList.add('active');
+  document.getElementById('confirmYes').onclick = () => {
+    if (confirmCallback) confirmCallback();
+    closeConfirm();
+  };
+}
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('active');
+  confirmCallback = null;
+}
+
+// ==================== INIT ====================
+showSkeletons();
+setTimeout(() => { renderProducts(); }, 800);
+</script>
+</body>
+</html>
